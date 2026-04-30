@@ -1,35 +1,48 @@
-WITH review_orders AS (
-    SELECT
-        r.review_id,
-        r.order_id,
-        o.order_status,
-        c.customer_unique_id
-    FROM raw.reviews r
-    JOIN raw.orders o
-        ON r.order_id = o.order_id
-    JOIN raw.customers c
-        ON o.customer_id = c.customer_id
-),
-
-review_agg AS (
+WITH review_counts AS (
     SELECT
         review_id,
-
-        COUNT(DISTINCT customer_unique_id) AS unique_customer_count,
-        COUNT(DISTINCT order_id) AS order_count,
-
-        COUNT(*) FILTER (WHERE order_status = 'delivered') AS delivered_count,
-        COUNT(*) FILTER (WHERE order_status <> 'delivered') AS non_delivered_count
-
-    FROM review_orders
+        COUNT(*) AS n_rows
+    FROM raw.reviews
     GROUP BY review_id
 )
+SELECT
+    COUNT(*) AS n_review_ids,
+    n_rows AS times_repeated,
+    SUM(COUNT(*)) OVER () AS total_review_ids,
+    ROUND(
+        COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (),
+        2
+    ) AS pct_review_ids,
+    SUM(n_rows * COUNT(*)) OVER () AS total_rows,
+    (n_rows * COUNT(*)) AS n_rows_per_multiplicity,
+    ROUND(
+        (n_rows * COUNT(*)) * 100.0 / SUM(n_rows * COUNT(*)) OVER (),
+        2
+    ) AS pct_rows_per_multiplicity
+FROM review_counts
+GROUP BY n_rows
+ORDER BY n_rows;
 
-SELECT *
-FROM review_agg
-WHERE
-    unique_customer_count > 1
-    OR delivered_count > 1;
+
+WITH review_stats AS (
+    SELECT
+        r.review_id,
+        COUNT(DISTINCT c.customer_unique_id) AS unique_customer_count,
+        COUNT(DISTINCT CASE 
+            WHEN o.order_status = 'delivered' THEN o.order_id 
+        END) AS delivered_count
+    FROM raw.reviews r
+    JOIN raw.orders o USING (order_id)
+    JOIN raw.customers c USING (customer_id)
+    GROUP BY r.review_id
+)
+SELECT
+    COUNT(*) AS n_review_ids,
+    unique_customer_count,
+    delivered_count
+FROM review_stats
+GROUP BY unique_customer_count, delivered_count
+ORDER BY unique_customer_count, delivered_count;
 
 
 SELECT
@@ -40,12 +53,6 @@ SELECT
 FROM raw.reviews
 GROUP BY review_id
 HAVING COUNT(DISTINCT review_creation_date) > 1 OR COUNT(DISTINCT review_answer_timestamp) > 1;
-
-
-SELECT o.order_id, order_purchase_timestamp, product_id, seller_id, shipping_limit_date
-FROM raw.orders AS o JOIN raw.order_items AS oi
-    ON o.order_id = oi.order_id
-WHERE o.order_id = 'c88b1d1b157a9999ce368f218a407141' OR o.order_id = 'c44883fc2529b4aa03ca90e7e09d95b6';
 
 
 WITH review_counts AS (
@@ -59,7 +66,6 @@ WITH review_counts AS (
     JOIN raw.order_items oi USING (order_id)
     GROUP BY review_id
 )
-
 SELECT
     CASE
         WHEN n_rows = 1 THEN 'clean'
@@ -80,7 +86,6 @@ WITH review_product_counts AS (
         ON r.order_id = oi.order_id
     GROUP BY r.review_id
 )
-
 SELECT
     CASE
         WHEN n_products = 1 THEN 'decidable'
