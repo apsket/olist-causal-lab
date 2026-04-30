@@ -56,7 +56,7 @@ CREATE TABLE raw.products (
     product_id TEXT,
     product_category_name TEXT,
     product_name_lenght INT,
-    product_description_length INT,
+    product_description_lenght INT,
     product_photos_qty INT,
     product_weight_g NUMERIC,
     product_length_cm NUMERIC,

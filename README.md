@@ -49,7 +49,8 @@ data/          → raw CSV files (source of truth)
 database/      → schema definitions (PostgreSQL)
 sql/           → transformation layers (staging, marts, features)
 src/           → ingestion and utility scripts
-notebooks/     → SQL-driven exploratory analysis 
+notebooks/     → SQL-driven exploratory analysis
+docs/          → document data concerns
 ```
 
 ### Data Modeling Layers
