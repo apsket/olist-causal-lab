@@ -84,7 +84,7 @@ docs/          → document data concerns
 
 The dataset is loaded into a PostgreSQL database running inside a Docker container. The process is fully automated and reproducible.
 
-### 1. Database Initialization
+### Database Initialization
 
 On first startup, Docker initializes a PostgreSQL instance and executes all SQL scripts located in: `/database/init`
 
@@ -106,14 +106,14 @@ These scripts are executed in order:
 
 ---
 
-### 2. Data Source
+### Data Source
 
 All raw data originates from the Olist e-commerce dataset and is mounted into the container at: `/data/raw`
 This allows PostgreSQL to access CSV files directly during ingestion.
 
 ---
 
-### 3. Loading Mechanism
+### Loading Mechanism
 
 Data ingestion is performed using PostgreSQL’s `COPY` command:
 
@@ -128,7 +128,7 @@ This approach ensures fast and efficient bulk loading of large datasets.
 
 ---
 
-4. Important Design Principles
+### Important Design Principles
 
 - Raw layer is immutable
     - Data is loaded exactly as provided in source files
