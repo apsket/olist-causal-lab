@@ -2,8 +2,11 @@ CREATE OR REPLACE VIEW staging.stg_products AS
 SELECT
     product_id,
     product_category_name,
-    product_name_lenght AS product_name_length,  -- fix here
+    
+    -- FIXED SPELLINGS (standardized column names)
+    product_name_lenght AS product_name_length,
     product_description_lenght AS product_description_length,
+
     product_photos_qty,
     product_weight_g,
     product_length_cm,
