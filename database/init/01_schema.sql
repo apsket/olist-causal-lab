@@ -1,0 +1,4 @@
+CREATE SCHEMA raw;
+CREATE SCHEMA staging;
+CREATE SCHEMA marts;
+CREATE SCHEMA features;

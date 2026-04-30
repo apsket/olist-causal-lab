@@ -79,6 +79,72 @@ notebooks/     → SQL-driven exploratory analysis
 
 ---
 
+## 📥 Data Loading Process
+
+The dataset is loaded into a PostgreSQL database running inside a Docker container. The process is fully automated and reproducible.
+
+### 1. Database Initialization
+
+On first startup, Docker initializes a PostgreSQL instance and executes all SQL scripts located in: `/database/init`
+
+These scripts are executed in order:
+
+1. `01_schema.sql`  
+   Creates database schemas:
+   - `raw`
+   - `staging`
+   - `marts`
+   - `features`
+
+2. `02_raw_tables.sql`  
+   Defines raw tables that mirror the original dataset structure.  
+   No transformations or constraints are applied at this stage.
+
+3. `03_load_data.sql`  
+   Loads CSV files directly into raw tables using PostgreSQL `COPY` for efficient bulk ingestion.
+
+---
+
+### 2. Data Source
+
+All raw data originates from the Olist e-commerce dataset and is mounted into the container at: `/data/raw`
+This allows PostgreSQL to access CSV files directly during ingestion.
+
+---
+
+### 3. Loading Mechanism
+
+Data ingestion is performed using PostgreSQL’s `COPY` command:
+
+```sql
+COPY raw.orders
+FROM '/data/raw/olist_orders_dataset.csv'
+DELIMITER ','
+CSV HEADER;
+```
+
+This approach ensures fast and efficient bulk loading of large datasets.
+
+---
+
+4. Important Design Principles
+
+- Raw layer is immutable
+    - Data is loaded exactly as provided in source files
+    - No cleaning or transformations are applied
+- No primary keys or constraints in raw tables
+    - Ensures ingestion is not blocked by data quality issues
+    - Data validation is handled in later layers
+- Reproducibility
+    - The entire database can be rebuilt from scratch using:
+
+```Bash
+docker compose down -v
+docker compose up -d
+```
+
+---
+
 ## 🔍 Initial Focus (EDA)
 
 Exploration is centered around:
