@@ -54,6 +54,20 @@ ON p.order_id = o.order_id
 WHERE p.order_id IS NULL;
 
 
+SELECT COUNT(*) AS num_order_ids_in_reviews_notin_order_items
+FROM raw.reviews r
+LEFT JOIN raw.order_items oi
+ON r.order_id = oi.order_id
+WHERE oi.order_id IS NULL;
+
+
+SELECT COUNT(*) AS num_order_ids_notin_reviews_in_order_items
+FROM raw.reviews r
+RIGHT JOIN raw.order_items oi
+ON r.order_id = oi.order_id
+WHERE r.order_id IS NULL;
+
+
 SELECT COUNT(*) AS num_product_ids_in_order_items_notin_products
 FROM raw.order_items oi
 LEFT JOIN raw.products p
