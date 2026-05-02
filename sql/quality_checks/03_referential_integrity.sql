@@ -60,11 +60,13 @@ LEFT JOIN raw.products p
 ON oi.product_id = p.product_id
 WHERE p.product_id IS NULL;
 
+
 SELECT COUNT(*) AS num_product_ids_notin_order_items_in_products
 FROM raw.order_items oi
 RIGHT JOIN raw.products p
 ON oi.product_id = p.product_id
 WHERE oi.product_id IS NULL;
+
 
 SELECT COUNT(*) AS num_seller_ids_in_order_items_notin_sellers
 FROM raw.order_items oi
@@ -72,8 +74,37 @@ LEFT JOIN raw.sellers s
 ON oi.seller_id = s.seller_id
 WHERE s.seller_id IS NULL;
 
+
 SELECT COUNT(*) AS num_seller_ids_notin_order_items_in_sellers
 FROM raw.order_items oi
 RIGHT JOIN raw.sellers s
 ON oi.seller_id = s.seller_id
 WHERE oi.seller_id IS NULL;
+
+
+SELECT COUNT(*) AS zip_codes_in_customers_notin_geolocation
+FROM raw.customers c
+LEFT JOIN raw.geolocation g
+ON c.customer_zip_code_prefix = g.geolocation_zip_code_prefix
+WHERE g.geolocation_zip_code_prefix IS NULL;
+
+
+SELECT COUNT(*) AS zip_codes_notin_customers_in_geolocation
+FROM raw.customers c
+RIGHT JOIN raw.geolocation g
+ON c.customer_zip_code_prefix = g.geolocation_zip_code_prefix
+WHERE c.customer_zip_code_prefix IS NULL;
+
+
+SELECT COUNT(*) AS zip_codes_in_sellers_notin_geolocation
+FROM raw.sellers s
+LEFT JOIN raw.geolocation g
+ON s.seller_zip_code_prefix = g.geolocation_zip_code_prefix
+WHERE g.geolocation_zip_code_prefix IS NULL;
+
+
+SELECT COUNT(*) AS zip_codes_notin_sellers_in_geolocation
+FROM raw.sellers s
+RIGHT JOIN raw.geolocation g
+ON s.seller_zip_code_prefix = g.geolocation_zip_code_prefix
+WHERE s.seller_zip_code_prefix IS NULL;
