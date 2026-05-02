@@ -52,3 +52,28 @@ FROM raw.payments p
 RIGHT JOIN raw.orders o
 ON p.order_id = o.order_id
 WHERE p.order_id IS NULL;
+
+
+SELECT COUNT(*) AS num_product_ids_in_order_items_notin_products
+FROM raw.order_items oi
+LEFT JOIN raw.products p
+ON oi.product_id = p.product_id
+WHERE p.product_id IS NULL;
+
+SELECT COUNT(*) AS num_product_ids_notin_order_items_in_products
+FROM raw.order_items oi
+RIGHT JOIN raw.products p
+ON oi.product_id = p.product_id
+WHERE oi.product_id IS NULL;
+
+SELECT COUNT(*) AS num_seller_ids_in_order_items_notin_sellers
+FROM raw.order_items oi
+LEFT JOIN raw.sellers s
+ON oi.seller_id = s.seller_id
+WHERE s.seller_id IS NULL;
+
+SELECT COUNT(*) AS num_seller_ids_notin_order_items_in_sellers
+FROM raw.order_items oi
+RIGHT JOIN raw.sellers s
+ON oi.seller_id = s.seller_id
+WHERE oi.seller_id IS NULL;
