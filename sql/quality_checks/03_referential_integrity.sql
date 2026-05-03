@@ -122,3 +122,37 @@ FROM raw.sellers s
 RIGHT JOIN raw.geolocation g
 ON s.seller_zip_code_prefix = g.geolocation_zip_code_prefix
 WHERE s.seller_zip_code_prefix IS NULL;
+
+
+WITH order_ids_notin_order_items_in_orders AS (
+    SELECT o.order_status, COUNT(*) AS num_order_ids_notin_order_items_in_orders, SUM(COUNT(*)) OVER () AS total_order_ids_notin_order_items_in_orders
+    FROM raw.order_items oi
+    RIGHT JOIN raw.orders o
+    ON oi.order_id = o.order_id
+    WHERE oi.order_id IS NULL
+    GROUP BY o.order_status
+), order_statuses_distribution AS (
+    SELECT order_status, COUNT(*) AS num_orders, SUM(COUNT(*)) OVER () AS total_orders
+    FROM raw.orders
+    GROUP BY order_status
+)
+SELECT *
+FROM order_ids_notin_order_items_in_orders
+FULL JOIN order_statuses_distribution USING (order_status);
+
+
+WITH order_ids_notin_reviews_in_orders AS (
+    SELECT o.order_status, COUNT(*) AS num_order_ids_notin_reviews_in_orders, SUM(COUNT(*)) OVER () AS total_order_ids_notin_reviews_in_orders
+    FROM raw.reviews r
+    RIGHT JOIN raw.orders o
+    ON r.order_id = o.order_id
+    WHERE r.order_id IS NULL
+    GROUP BY o.order_status
+), order_statuses_distribution AS (
+    SELECT order_status, COUNT(*) AS num_orders, SUM(COUNT(*)) OVER () AS total_orders
+    FROM raw.orders
+    GROUP BY order_status
+)
+SELECT *
+FROM order_ids_notin_reviews_in_orders
+FULL JOIN order_statuses_distribution USING (order_status);
