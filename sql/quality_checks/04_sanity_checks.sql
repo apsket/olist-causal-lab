@@ -71,7 +71,8 @@ SELECT MIN(order_item_id) as min_order_item_id,
     MAX(order_item_id) as max_order_item_id,
     MIN(price) as min_price,
     MAX(price) as max_price,
-    MIN(freight_value) as min_freight_value
+    MIN(freight_value) as min_freight_value,
+    MAX(freight_value) as max_freight_value
 FROM raw.order_items;
 
 
