@@ -42,6 +42,27 @@ SELECT
 FROM order_totals;
 
 
+WITH order_totals AS (
+    SELECT order_id,
+        COUNT(*) AS n_items_in_order,
+        COUNT(DISTINCT product_id) AS n_distinct_products_in_order,
+        COUNT(DISTINCT seller_id) AS n_distinct_sellers_in_order
+    FROM raw.order_items
+    GROUP BY order_id
+)
+SELECT
+    ROUND(AVG(n_items_in_order), 2) AS order_avg_items,
+    MIN(n_items_in_order) AS order_min_items,
+    MAX(n_items_in_order) AS order_max_items,
+    ROUND(AVG(n_distinct_products_in_order), 2) AS order_avg_distinct_products,
+    MIN(n_distinct_products_in_order) AS order_min_distinct_products,
+    MAX(n_distinct_products_in_order) AS order_max_distinct_products,
+    ROUND(AVG(n_distinct_sellers_in_order), 2) AS order_avg_distinct_sellers,
+    MIN(n_distinct_sellers_in_order) AS order_min_distinct_sellers,
+    MAX(n_distinct_sellers_in_order) AS order_max_distinct_sellers
+FROM order_totals;
+
+
 WITH order_item_counts AS (
     SELECT
         order_id,
