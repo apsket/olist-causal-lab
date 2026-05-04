@@ -77,3 +77,35 @@ SELECT
 FROM order_item_counts
 GROUP BY n_items
 ORDER BY n_orders DESC;
+
+
+WITH order_distinct_product_counts AS (
+    SELECT
+        order_id,
+        COUNT(DISTINCT product_id) AS n_distinct_products
+    FROM raw.order_items
+    GROUP BY order_id
+)
+SELECT
+    COUNT(*) AS n_orders,
+    n_distinct_products AS n_distinct_products_in_order,
+    ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (), 2) AS pct_orders
+FROM order_distinct_product_counts
+GROUP BY n_distinct_products
+ORDER BY n_orders DESC;
+
+
+WITH order_distinct_seller_counts AS (
+    SELECT
+        order_id,
+        COUNT(DISTINCT seller_id) AS n_distinct_sellers
+    FROM raw.order_items
+    GROUP BY order_id
+)
+SELECT
+    COUNT(*) AS n_orders,
+    n_distinct_sellers AS n_distinct_sellers_in_order,
+    ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (), 2) AS pct_orders
+FROM order_distinct_seller_counts
+GROUP BY n_distinct_sellers
+ORDER BY n_orders DESC;
