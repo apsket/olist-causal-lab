@@ -63,8 +63,8 @@ WHERE order_id IS NULL OR order_id = ''
     OR order_item_id IS NULL OR order_item_id < 0 
     OR product_id IS NULL OR product_id = '' 
     OR seller_id IS NULL OR seller_id = ''
-    OR price < 0
-    OR freight_value < 0;
+    OR price IS NULL OR price <= 0
+    OR freight_value IS NULL OR freight_value < 0;
 
 
 SELECT MIN(order_item_id) as min_order_item_id, 
