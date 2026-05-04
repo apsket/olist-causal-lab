@@ -60,7 +60,7 @@ WHERE geolocation_lat < -33.75 OR geolocation_lat > 5.27 OR geolocation_lng < -7
 SELECT COUNT(*) as num_invalid_order_items
 FROM raw.order_items
 WHERE order_id IS NULL OR order_id = '' 
-    OR order_item_id IS NULL OR order_item_id < 0 
+    OR order_item_id IS NULL OR order_item_id < 1 
     OR product_id IS NULL OR product_id = '' 
     OR seller_id IS NULL OR seller_id = ''
     OR price IS NULL OR price <= 0
