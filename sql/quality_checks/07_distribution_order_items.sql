@@ -8,6 +8,21 @@ SELECT
 FROM raw.order_items;
 
 
+SELECT order_id AS order_id_with_inconsistent_order_item_ids
+FROM raw.order_items
+GROUP BY order_id
+HAVING COUNT(DISTINCT order_item_id) <> MAX(order_item_id);
+
+
+SELECT MIN(order_item_id) as min_order_item_id, 
+    MAX(order_item_id) as max_order_item_id,
+    MIN(price) as min_item_price,
+    MAX(price) as max_item_price,
+    MIN(freight_value) as min_item_freight_value,
+    MAX(freight_value) as max_item_freight_value
+FROM raw.order_items;
+
+
 WITH order_totals AS (
     SELECT order_id, 
         SUM(price) AS order_total_price,
@@ -16,21 +31,15 @@ WITH order_totals AS (
     GROUP BY order_id
 )
 SELECT
-    AVG(order_total_price) AS avg_order_price,
+    ROUND(AVG(order_total_price), 2) AS avg_order_price,
     MIN(order_total_price) AS min_order_price,
     MAX(order_total_price) AS max_order_price,
-    AVG(order_total_freight) AS avg_order_freight,
+    ROUND(AVG(order_total_freight), 2) AS avg_order_freight,
     MIN(order_total_freight) AS min_order_freight,
     MAX(order_total_freight) AS max_order_freight,
     ROUND(AVG(order_total_freight / NULLIF(order_total_price, 0)), 2) AS avg_freight_to_price_ratio,
-    AVG(order_total_price + order_total_freight) AS avg_total_order_value
+    ROUND(AVG(order_total_price + order_total_freight), 2) AS avg_total_order_value
 FROM order_totals;
-
-
-SELECT order_id AS order_id_with_inconsistent_order_item_ids
-FROM raw.order_items
-GROUP BY order_id
-HAVING COUNT(DISTINCT order_item_id) <> MAX(order_item_id);
 
 
 WITH order_item_counts AS (
