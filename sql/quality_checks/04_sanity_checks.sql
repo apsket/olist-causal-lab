@@ -1,7 +1,10 @@
 SELECT COUNT(*) as num_invalid_customers
 FROM raw.customers
 WHERE customer_id IS NULL OR customer_id = ''
-    OR customer_unique_id IS NULL OR customer_unique_id = '';
+    OR customer_unique_id IS NULL OR customer_unique_id = ''
+    OR customer_zip_code_prefix IS NULL OR customer_zip_code_prefix < 0
+    OR customer_city IS NULL OR customer_city = ''
+    OR customer_state IS NULL OR customer_state = '';
 
 
 SELECT COUNT(*) as num_invalid_orders
