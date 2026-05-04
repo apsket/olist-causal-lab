@@ -43,9 +43,13 @@ WHERE review_id IS NULL OR review_id = ''
     OR review_creation_date > review_answer_timestamp;
 
 
-SELECT COUNT(*) as num_invalid_geolocation_coords
+SELECT COUNT(*) as num_invalid_geolocations
 FROM raw.geolocation
-WHERE geolocation_lat IS NULL OR geolocation_lng IS NULL OR geolocation_lat < -90 OR geolocation_lat > 90 OR geolocation_lng < -180 OR geolocation_lng > 180;
+WHERE geolocation_city IS NULL OR geolocation_city = ''
+    OR geolocation_state IS NULL OR geolocation_state = ''
+    OR geolocation_lat IS NULL OR geolocation_lng IS NULL 
+    OR geolocation_lat < -90 OR geolocation_lat > 90 
+    OR geolocation_lng < -180 OR geolocation_lng > 180;
 
 
 SELECT COUNT(*) as num_geolocations_outisde_brazil
